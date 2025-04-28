@@ -2,7 +2,7 @@
 title: "Productivity versus Participation: Divergent Growth Paths in North America and East Asia"
 author: "Kei Nie 2541685, Felix Huang 2517419, Yunqing Chen 2585468, Jackson Fang 2432239"
 format: 
-   pdf
+   html
 
 ---
 
@@ -192,7 +192,7 @@ import matplotlib.pyplot as plt
 from pathlib import Path
 import pycountry                     # pip install pycountry
 # ============== 1.  LOAD CLEAN PANEL =========================================
-DB_PATH = "../script/economic_data.db"
+DB_PATH = "economic_data.db"
 with sqlite3.connect(DB_PATH) as con:
     df = pd.read_sql_query("SELECT * FROM econ_cleaned", con)
 
@@ -328,6 +328,4 @@ These patterns highlight three development paths. Advanced economies (U.S., Cana
 # Conclusion
 
 Achieving and sustaining higher living standards requires a clear shift in how economies grow. Early on, many countries rely on bringing more workers into the labor force. Over time, however, simply adding heads is no longer enough—boosting what each worker produces becomes the main driver of income gains. Our findings show that advanced economies have already made this transition, but they now confront challenges from ageing populations and slower productivity growth. Emerging economies, such as China, are in the middle of this journey: moving from labor-intensive expansion toward a greater emphasis on skills, innovation, and capital investment.
-
-# Further Reading
 
