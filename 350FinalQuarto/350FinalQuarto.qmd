@@ -1,6 +1,6 @@
 ---
 title: "Productivity versus Participation: Divergent Growth Paths in North America and East Asia"
-author: "Kei Nie 2541685, Felix Huang 2517419, Yunqing Chen, Jackson Fang 2432239"
+author: "Kei Nie 2541685, Felix Huang 2517419, Yunqing Chen 2585468, Jackson Fang 2432239"
 format: 
    html
 
