@@ -8,7 +8,7 @@ format:
 
 # Introduction
 
-Our study examines how labour-force utilization, income levels and short-run growth interact in two North-American economies—the United States and Canada—and two large East-Asian economies—China and Japan—during the period 1990 to 2023.
+Economic development hinges on two broad engines of per-capita income growth: expanding labor inputs and boosting productivity. We would like to ask: How do countries at different stages of development deploy labor-force participation versus productivity improvements to drive real income gains? Examining five economies—Canada, China, the United Kingdom, Japan, and the United States—from 1990 to 2023, we find three distinct patterns. First, high-income North American and UK economies achieve substantial living-standards with only modest changes in employment rates. Second, China’s catch-up has depended first on rapidly mobilizing labor and later on transitioning toward productivity‐led growth. Third, Japan now struggles with stagnation in both dimensions. Strong negative correlations between GDP per capita and both employment and GDP growth suggest that wealthier countries derive less of their income gains from simply expanding the workforce or overall growth rates. Meanwhile, the strong positive association between employment and growth indicates that increases in labor participation tend to coincide with faster output expansion. Together these patterns trace a development path that moves from relying on labor quantity to elevating productivity per worker.
 
 # Data Description
 
@@ -175,7 +175,7 @@ print(summary_statistics)
 ```
 
 # Data Analysis
-## Income levels and their growth paths Income levels and their growth paths
+### Income levels and their growth paths Income levels and their growth paths
 ```{python}
 #| echo: false
 #| message: false
@@ -258,9 +258,9 @@ lineplot("GDP",         "GDP per capita (constant 2015 US$)")
 
 ```
 
-The GDP-per-capita plot underscores the prosperity gap that separates North America from East Asia. Real income in the United States rises from roughly thirty-nine thousand dollars in 1990 to about sixty-six thousand in 2023, widening its lead over all other cases. Canada mirrors the American path but remains seven to ten thousand dollars lower throughout. China, starting from a base of just over one thousand dollars, multiplies its income almost ten-fold, yet still reaches only about twelve thousand dollars by the end of the sample. Japan’s income climbs during the 1990s but plateaus at approximately thirty-six thousand dollars after 2010. The corresponding growth-rate figures reveal that China’s rapid expansion, once firmly in double digits, decelerates to mid-single-digit territory in the 2010s. Japan’s growth oscillates around zero, reflecting its long struggle with deflation and demographic ageing. The United States and Canada exhibit more moderate booms and busts, rarely exceeding four percent on the upside or falling much below minus two percent except in the global crises of 2009 and 2020, which strike all four economies simultaneously.
+Real income in the United States rises from roughly $39 000 in 1990 to about $66 000 in 2023, widening its lead over all other cases. Canada mirrors the American path but remains $7 000–$10 000 lower throughout. The United Kingdom follows a similar trajectory, climbing from around $31 000 to nearly $47 000 over this period, tracking North America closely but persistently lagging by a few thousand dollars, with a pronounced dip around the 2009 global financial crisis and a smaller setback in 2020. China, starting from just over $1 000, multiplies its income almost ten-fold, yet still reaches only about $12 000 by the end of the sample. Japan’s income climbs during the 1990s but plateaus at approximately $36 000 after 2010. Corresponding growth-rate figures reveal that China’s rapid expansion, once firmly in double digits, decelerates to mid-single-digit territory in the 2010s. Japan’s growth oscillates around zero, reflecting its long struggle with deflation and demographic ageing. The United States, Canada, and the UK exhibit more moderate booms and busts—rarely exceeding 4 percent on the upside or falling much below 2 percent, except in the global crises of 2009 and 2020, which strike all five economies simultaneously.
 
-## Evolution of labor-market participation
+### Evolution of labor-market participation
 ```{python}
 #| echo: false
 #| message: false
@@ -281,7 +281,7 @@ lineplot("Employment", "Employment-to-population 15+ (%)")
 
 ```
 
-The employment-to-population chart reveals markedly different trajectories between the two regions. China begins the 1990s with an exceptionally high participation rate of about seventy-seven percent, but this figure declines steadily to the mid-sixties by 2023. Japan starts near sixty-three percent, drifts downward for a decade, then partially recovers but never regains its early-1990s peak. Canada and the United States instead fluctuate within a relatively narrow band between fifty-eight and sixty-four percent. Both North-American economies share two conspicuous dips—the Great Recession in 2009 and the Covid-19 shock in 2020—yet by 2023 they have largely returned to pre-pandemic levels of around sixty-two to sixty-three percent.
+The employment-to-population chart reveals markedly different trajectories across these economies. China begins the 1990s with an exceptionally high participation rate of about 77 percent, but this figure declines steadily to the mid-60s by 2023. Japan starts near 63 percent, drifts downward for a decade, then partially recovers but never regains its early-1990s peak. The United Kingdom’s rate is lower, around 56 percent in 1990, dips slightly in the mid-1990s, then climbs gradually into the high-50s by the mid-2000s, before falling back below 56 percent during the 2009 recession and then recovering toward 60 percent by 2020; a pandemic-induced drop in 2020 is followed by a rebound to roughly 59 percent by 2023. Canada and the United States instead fluctuate within a relatively narrow band between 58 and 64 percent. Both North American economies share two conspicuous dips, which are the Great Recession in 2008 and the COVID-19 shock in 2020, yet by 2023 they have largely returned to pre-pandemic levels of around 62–63 percent.
 
 
 ## GDP Growth of Countries
@@ -305,7 +305,7 @@ g.savefig(OUT_FIG / "facet_gdp_growth.png", dpi=300)
 plt.show()
 ```
 
-Each panel shows annual real-GDP growth for one country (1990-2023). China starts with exceptional double-digit gains, slows steadily after 2010, and dips sharply in 2020. Canada, the UK and the US share the usual rich-economy cycle: steady 2-4 % growth interrupted by recessions in 2009 and 2020, with quick rebounds. Japan hovers near zero for most of the period, illustrating prolonged stagnation, and sees the same two global downturns. The shaded bands mark wider volatility during those recessions and during China’s early boom, but are narrow in normal years, signalling more predictable growth paths then.
+Each panel shows annual real-GDP growth for one country. China starts with exceptional double-digit gains, slows steadily after 2010, and dips sharply in 2020. Canada, the United Kingdom, and the United States share the usual rich-economy cycle: steady 2–4 percent growth interrupted by recessions in 2009 and 2020, with quick rebounds. In the UK’s case, growth hovers around 2–3 percent through the 1990s and 2000s, dips slightly below zero in the global financial crisis, recovers modestly before the 2020 shock, then snaps back above 5 percent in 2021. Japan hovers near zero for most of the period, illustrating prolonged stagnation, and sees the same two global downturns. The shaded bands mark wider volatility during those recessions and during China’s early boom, but remain narrow in normal years，signaling more predictable growth paths then.
 
 ## Indicators' Correlation
 |            | GDP   | Employment | GDP Growth |
@@ -314,16 +314,20 @@ Each panel shows annual real-GDP growth for one country (1990-2023). China start
 | Employment | -0.72 | 1.0        | 0.75       |
 | GDP Growth | -0.65 | 0.75       | 1.0        |
 
-The correlation matrix for 1990–2023 reveals a clear trade-off between output levels and both labour participation and growth momentum. GDP per capita is strongly negatively correlated with the employment-to-population ratio (–0.72), indicating that higher-income economies tend to rely more on productivity gains than on expanding their workforce. Likewise, GDP per capita exhibits a sizeable negative relationship with GDP growth (–0.65), reflecting the convergence pattern whereby lower-income countries grow faster as they catch up. By contrast, employment share and GDP growth move strongly in tandem (+0.75), suggesting that when economies do expand rapidly, they often do so by mobilizing additional labor. Together, these coefficients underscore how the balance between labor input and productivity shifts as countries develop.
+The correlation matrix reveals a clear trade-off between output levels and both labor participation and growth momentum. GDP per capita is strongly negatively correlated with the employment-to-population ratio (–0.72), indicating that higher-income economies tend to rely more on productivity gains than on expanding their workforce. Likewise, GDP per capita exhibits a sizeable negative relationship with GDP growth (–0.65), reflecting the convergence pattern whereby lower-income countries grow faster as they catch up. By contrast, employment share and GDP growth move strongly in tandem (+0.75), suggesting that when economies do expand rapidly, they often do so by mobilizing additional labor. Together, these coefficients underscore how the balance between labor input and productivity shifts as countries develop.
 
-# Discussion
+# Result and discussion
+### Result
+Between 1990 and 2023, per-capita incomes diverged sharply across the five economies. The United States rose from $39 000 to $66 000, Canada from $32 000 to $55 000, and the United Kingdom from $31 000 to $47 000—each maintaining a stable employment-to-population rate in the high-50s to low-60s. China’s income surged nearly ten-fold (from $1 000 to $12 000) even as its participation rate fell from 77 percent to the mid-60s. Japan climbed to $36 000 by 2010 but then stagnated alongside a roughly constant 56 percent participation rate. Annual GDP growth showed China’s double-digit booms tapering to mid-single digits after 2010 and a sharp 2020 contraction; advanced economies exhibited 2–4 percent “business-as-usual” growth with synchronized dips in 2009 and 2020. The correlation matrix quantifies these patterns: GDP per capita correlates –0.72 with employment and –0.65 with growth, while employment and growth correlate +0.75.
 
-## Overall Discussion of Results
+### Discussion
 
+These patterns highlight three development paths. Advanced economies (U.S., Canada, U.K.) raise living standards mostly through productivity gains rather than by expanding their workforce. China’s catch-up unfolded in two stages: first mobilizing vast numbers of workers, then shifting toward higher output per worker. Japan now faces stagnation in both income growth and labor participation, held back by an ageing population and years of low demand. However, national averages mask regional and sectoral differences, and strong correlations do not prove causation—factors like investment, technology adoption, and policy changes also play crucial roles. Major events (China’s WTO entry, Japan’s “lost decades,” the pandemic) further complicate the simple trend picture.
 
-## Limitations
 
 # Conclusion
+
+Achieving and sustaining higher living standards requires a clear shift in how economies grow. Early on, many countries rely on bringing more workers into the labor force. Over time, however, simply adding heads is no longer enough—boosting what each worker produces becomes the main driver of income gains. Our findings show that advanced economies have already made this transition, but they now confront challenges from ageing populations and slower productivity growth. Emerging economies, such as China, are in the middle of this journey: moving from labor-intensive expansion toward a greater emphasis on skills, innovation, and capital investment.
 
 # Further Reading
 
