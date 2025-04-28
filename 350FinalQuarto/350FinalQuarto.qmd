@@ -1,11 +1,8 @@
 ---
 title: "Productivity versus Participation: Divergent Growth Paths in North America and East Asia"
-author: "Kei Nie, Felix Huang, Yunqing Chen, Jackson Fang"
+author: "Kei Nie 2541685, Felix Huang 2517419, Yunqing Chen, Jackson Fang 2432239"
 format: 
-   pdf:
-     fig-width: 3
-     fig-height: 2
-     margin: 1in
+   html
 
 ---
 
@@ -178,7 +175,6 @@ print(summary_statistics)
 ```
 
 # Data Analysis
-
 ## Income levels and their growth paths Income levels and their growth paths
 ```{python}
 #| echo: false
@@ -187,6 +183,7 @@ print(summary_statistics)
 #| fig-width: 6
 #| fig-height: 4
 #| fig-align: "center"
+#| fig-pos: "H"
 import sqlite3
 import pandas as pd
 import numpy as np
@@ -240,7 +237,7 @@ df = (df.sort_values(["iso3", "Year"])
 # ============== 4.  DESCRIPTIVE PLOTS ========================================
 def lineplot(ind_col, ylab):
     # make the figure itself bigger in inches
-    plt.figure(figsize=(12, 7))
+    plt.figure(figsize=(10, 5))
     
     for iso, g in df.groupby("iso3"):
         plt.plot(g["Year"], g[ind_col], label=iso, linewidth=2)
@@ -271,11 +268,11 @@ The GDP-per-capita plot underscores the prosperity gap that separates North Amer
 #| fig-width: 8      # Quarto container size (inches)
 #| fig-height: 5
 #| fig-align: "center"
-
+#| fig-pos: "H"
 import matplotlib as mpl
 
 # bump up the default figure size for this call
-mpl.rcParams['figure.figsize']   = (12, 7)
+mpl.rcParams['figure.figsize']   = (10, 5)
 # shrink the legend font
 mpl.rcParams['legend.fontsize']  = 8
 
@@ -295,7 +292,7 @@ The employment-to-population chart reveals markedly different trajectories betwe
 #| fig-width: 6
 #| fig-height: 4
 #| fig-align: "center"
-
+#| fig-pos: "H"
 import seaborn as sns
 g = sns.FacetGrid(df, col="iso3", col_wrap=3, height=2.2, aspect=1.4,
                   sharey=False, sharex=True)
@@ -309,3 +306,24 @@ plt.show()
 ```
 
 Each panel shows annual real-GDP growth for one country (1990-2023). China starts with exceptional double-digit gains, slows steadily after 2010, and dips sharply in 2020. Canada, the UK and the US share the usual rich-economy cycle: steady 2-4 % growth interrupted by recessions in 2009 and 2020, with quick rebounds. Japan hovers near zero for most of the period, illustrating prolonged stagnation, and sees the same two global downturns. The shaded bands mark wider volatility during those recessions and during China’s early boom, but are narrow in normal years, signalling more predictable growth paths then.
+
+## Indicators' Correlation
+|            | GDP   | Employment | GDP Growth |
+|------------|-------|------------|------------|
+| GDP        | 1.0   | -0.72      | -0.65      |
+| Employment | -0.72 | 1.0        | 0.75       |
+| GDP Growth | -0.65 | 0.75       | 1.0        |
+
+The correlation matrix for 1990–2023 reveals a clear trade-off between output levels and both labour participation and growth momentum. GDP per capita is strongly negatively correlated with the employment-to-population ratio (–0.72), indicating that higher-income economies tend to rely more on productivity gains than on expanding their workforce. Likewise, GDP per capita exhibits a sizeable negative relationship with GDP growth (–0.65), reflecting the convergence pattern whereby lower-income countries grow faster as they catch up. By contrast, employment share and GDP growth move strongly in tandem (+0.75), suggesting that when economies do expand rapidly, they often do so by mobilizing additional labor. Together, these coefficients underscore how the balance between labor input and productivity shifts as countries develop.
+
+# Discussion
+
+## Overall Discussion of Results
+
+
+## Limitations
+
+# Conclusion
+
+# Further Reading
+

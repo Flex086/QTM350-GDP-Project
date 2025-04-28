@@ -1,5 +1,19 @@
 title: "350FinalQuarto"
-format: html
+format:
+  pdf:
+    include-in-header:
+      text: |
+        % allow the [H] float placement specifier
+        \usepackage{float}  
+        % let us force barriers between floats
+        \usepackage[section]{placeins}  
+        % reduce the vertical gaps around floats
+        \setlength{\textfloatsep}{6pt}
+        \setlength{\floatsep}{6pt}
+        \setlength{\intextsep}{6pt}
+        % don’t stretch pages to fill them bottom-to-top
+        \raggedbottom
+
 execute:
   kernel: base
 
