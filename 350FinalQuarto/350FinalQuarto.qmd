@@ -1,5 +1,5 @@
 ---
-title: "Productivity versus Participation: Divergent Growth Paths in North America and East Asia"
+title: "Workforce vs. Output: Tracing Income Convergence Paths Across Five Economies"
 author: "Kei Nie 2541685, Felix Huang 2517419, Yunqing Chen 2585468, Jackson Fang 2432239"
 format: 
    html
@@ -320,7 +320,7 @@ The correlation matrix reveals a clear trade-off between output levels and both 
 ### Result
 Between 1990 and 2023, per-capita incomes diverged sharply across the five economies. The United States rose from $39 000 to $66 000, Canada from $32 000 to $55 000, and the United Kingdom from $31 000 to $47 000—each maintaining a stable employment-to-population rate in the high-50s to low-60s. China’s income surged nearly ten-fold (from $1 000 to $12 000) even as its participation rate fell from 77 percent to the mid-60s. Japan climbed to $36 000 by 2010 but then stagnated alongside a roughly constant 56 percent participation rate. Annual GDP growth showed China’s double-digit booms tapering to mid-single digits after 2010 and a sharp 2020 contraction; advanced economies exhibited 2–4 percent “business-as-usual” growth with synchronized dips in 2009 and 2020. The correlation matrix quantifies these patterns: GDP per capita correlates –0.72 with employment and –0.65 with growth, while employment and growth correlate +0.75.
 
-### Discussion
+# Discussion
 
 These patterns highlight three development paths. Advanced economies (U.S., Canada, U.K.) raise living standards mostly through productivity gains rather than by expanding their workforce. China’s catch-up unfolded in two stages: first mobilizing vast numbers of workers, then shifting toward higher output per worker. Japan now faces stagnation in both income growth and labor participation, held back by an ageing population and years of low demand. However, national averages mask regional and sectoral differences, and strong correlations do not prove causation—factors like investment, technology adoption, and policy changes also play crucial roles. Major events (China’s WTO entry, Japan’s “lost decades,” the pandemic) further complicate the simple trend picture.
 
