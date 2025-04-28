@@ -6,12 +6,12 @@ format:
      fig-width: 3
      fig-height: 2
      margin: 1in
-<<<<<<< HEAD
+
 ---
 
 # Introduction
 
-Our study examines how labour-force utilization, income levels and short-run growth interact in two North-American economies—the United States and Canada—and two large East-Asian economies—China and Japan—during the period 1990 to 2023. 。。。
+Our study examines how labour-force utilization, income levels and short-run growth interact in two North-American economies—the United States and Canada—and two large East-Asian economies—China and Japan—during the period 1990 to 2023.
 
 # Data Description
 
@@ -19,37 +19,10 @@ Our study examines how labour-force utilization, income levels and short-run gro
 The study draws on a World-Bank panel that tracks four economies—Canada, the United States, China and Japan—from 1990 through 2023. Each country-year record combines three harmonised indicators downloaded on 15 April 2025 from the World Development Indicators: real GDP per capita in constant-2015 dollars, its annual growth rate and the employment-to-population ratio for adults aged 15 plus. 
 
 ### Data cleaning, merging, and preprocessing
-```{python}
-
-#| echo: true
-#| eval: true
-
-!conda install pycountry
-!conda install matplotlib 
-
-
-=======
-engine: jupyter
-jupyter:
-  kernel: base
-editor: 
-   render-on-save: true
----
-```{python}
-import sys, os
-print("sys.executable:", sys.executable)
-print("CONDA_DEFAULT_ENV:", os.environ.get("CONDA_DEFAULT_ENV"))
-```
-## Introduction
-
-Our study examines how labour-force utilization, income levels and short-run growth interact in two North-American economies—the United States and Canada—and two large East-Asian economies—China and Japan—during the period 1990 to 2023. 。。。
-
-## Data
 
 ```{python}
 #| echo: false
 #| message: false
->>>>>>> da83c8538dd800e210e93f94073fc384dbaf906c
 import sqlite3
 import pandas as pd
 
@@ -64,11 +37,10 @@ datasets = [
 ]
 
 for level, path in datasets:
-    print(f"→ Loading raw table: {level}_raw from {path!r}")
     df = pd.read_csv(path, skiprows=4)  # adjust skiprows only if necessary
     df.to_sql(f"{level}_raw", conn, if_exists='replace', index=False)
 
-print("All raw tables loaded into SQLite.")
+
 
 import sqlite3
 
@@ -120,13 +92,9 @@ conn.commit()
 
 # 6) Verify first 5 rows of each
 for tbl in ['gdp_raw','emp_raw','gdp_growth_raw']:
-    print(f"\n--- {tbl} ---")
     cur.execute(f"SELECT {col_clause} FROM {tbl} LIMIT 5;")
     rows = cur.fetchall()
-    # print column headers then rows
-    print(columns)
-    for row in rows:
-        print(row)
+
 
 # 7) Close connection
 conn.close()
@@ -138,13 +106,9 @@ import pandas as pd
 conn = sqlite3.connect('economic_data.db')
 
 # Read all three tables back into pandas
-print("Reading tables into pandas DataFrames...")
 gdp_df        = pd.read_sql_query("SELECT * FROM gdp_raw", conn)
 emp_df        = pd.read_sql_query("SELECT * FROM emp_raw", conn)
 gdp_growth_df = pd.read_sql_query("SELECT * FROM gdp_growth_raw", conn)
-
-# Cell 4 — Data Cleaning
-print("\nCleaning data...")
 
 # Melt the dataframes (wide to long format) for easier merging later
 def melt_df(df, value_name):
@@ -166,8 +130,7 @@ clean_numeric(gdp_long, 'GDP')
 clean_numeric(emp_long, 'Employment')
 clean_numeric(gdp_growth_long, 'GDP_Growth')
 
-# Cell 5 — Merge Tables Together
-print("\nMerging datasets...")
+
 
 merged_df = gdp_long.merge(emp_long,        on=['Country Name','Indicator Name','Year'], how='outer')
 merged_df = merged_df.merge(gdp_growth_long, on=['Country Name','Indicator Name','Year'], how='outer')
@@ -178,14 +141,11 @@ merged_df.drop(columns=['Indicator Name'], inplace=True)
 # Optional: Reorder columns
 merged_df = merged_df[['Country Name', 'Year', 'GDP', 'Employment', 'GDP_Growth']]
 
-# Cell 6 — Save Cleaned DataFrame into SQL
-print("\nSaving merged cleaned data into database as 'econ_cleaned'...")
 
 merged_df.to_sql('econ_cleaned', conn, if_exists='replace', index=False)
 
 
-# Cell 7 — Descriptive Statistics Summary
-print("\nGenerating summary statistics...")
+
 
 summary_stats = merged_df.groupby('Country Name').agg({
     'GDP': ['count', 'mean', 'std', 'min', 'max'],
@@ -196,8 +156,7 @@ summary_stats = merged_df.groupby('Country Name').agg({
 # Clean up column names
 summary_stats.columns = ['_'.join(col).strip() for col in summary_stats.columns.values]
 
-# Display
-print(summary_stats)
+
 
 # Optional: Save summary statistics to a CSV
 summary_stats.to_csv('summary_statistics.csv')
@@ -205,46 +164,51 @@ summary_stats.to_csv('summary_statistics.csv')
 # Final Step — Close connection
 conn.close()
 
-print("\nAll tasks completed!")
 ```
 
+### Summary of Key Variables
+
 ```{python}
-import os
-
-# show the current working directory
-print("CWD:", os.getcwd())
-
-# list files/folders there so you can see where your .db lives
-print("Contents:", os.listdir("."))
-
-
 #| echo: false
 #| message: false
-# ============== 0.  SETUP ====================================================
+import pandas as pd
+summary_statistics = pd.read_csv("../script/summary_statistics.csv")
+print(summary_statistics)
 
-!pwd
+```
+
+# Data Analysis
+
+## Income levels and their growth paths Income levels and their growth paths
+```{python}
+#| echo: false
+#| message: false
+#| warning: false
+#| fig-width: 6
+#| fig-height: 4
+#| fig-align: "center"
 import sqlite3
 import pandas as pd
 import numpy as np
+import statsmodels.api as sm
 import matplotlib.pyplot as plt
 from pathlib import Path
 import pycountry                     # pip install pycountry
+# ============== 1.  LOAD CLEAN PANEL =========================================
+DB_PATH = "../script/economic_data.db"
+with sqlite3.connect(DB_PATH) as con:
+    df = pd.read_sql_query("SELECT * FROM econ_cleaned", con)
+
+if df.empty:
+    raise RuntimeError("econ_cleaned table is empty – check SQL pipeline.")
+
+INDICATORS = ["GDP", "Employment", "GDP_Growth"]
 
 # ---- output folders ---------------------------------------------------------
 OUT_FIG = Path("figures")
 OUT_DAT = Path("processed")
 OUT_FIG.mkdir(exist_ok=True, parents=True)
 OUT_DAT.mkdir(exist_ok=True, parents=True)
-
-INDICATORS = ["GDP", "Employment", "GDP_Growth"]
-
-# ============== 1.  LOAD CLEAN PANEL =========================================
-DB_PATH = "economic_data.db"
-with sqlite3.connect(DB_PATH) as con:
-    df = pd.read_sql_query("SELECT * FROM econ_cleaned", con)
-
-if df.empty:
-    raise RuntimeError("econ_cleaned table is empty – check SQL pipeline.")
 
 # ============== 2.  ENRICH  – add ISO-3 codes  ===============================
 def name_to_iso3(name):
@@ -273,56 +237,75 @@ df = (df.sort_values(["iso3", "Year"])
         .apply(lambda g: g.ffill())
         .reset_index(drop=True))
 
-```
-
-### Summary of Key Variables
-
-```{python}
-import pandas as pd
-summary_statistics = pd.read_csv("../script/summary_statistics.csv")
-print(summary_statistics)
-
-```
-
-# Data Analysis
-
-## Income levels and their growth paths Income levels and their growth paths
-
-
-
-
-```{python}
-=======
->>>>>>> da83c8538dd800e210e93f94073fc384dbaf906c
-#| echo: true
+# ============== 4.  DESCRIPTIVE PLOTS ========================================
 def lineplot(ind_col, ylab):
-    plt.figure()
+    # make the figure itself bigger in inches
+    plt.figure(figsize=(12, 7))
+    
     for iso, g in df.groupby("iso3"):
-        plt.plot(g["Year"], g[ind_col], label=iso)
-    plt.title(ylab)
-    plt.xlabel("Year")
-    plt.ylabel(ylab)
-    plt.legend()
+        plt.plot(g["Year"], g[ind_col], label=iso, linewidth=2)
+    
+    plt.title(ylab, fontsize=16)
+    plt.xlabel("Year", fontsize=14)
+    plt.ylabel(ylab, fontsize=14)
+    
+    # make legend smaller
+    plt.legend(fontsize=9, frameon=False, loc="best")
+    
     plt.tight_layout()
+    # save out at high resolution
     plt.savefig(OUT_FIG / f"{ind_col}_trend.png", dpi=300)
-    plt.plot()
+    plt.show()
 
 lineplot("GDP",         "GDP per capita (constant 2015 US$)")
-lineplot("GDP_Growth",  "GDP growth rate (%)")
-lineplot("Employment",  "Employment-to-population 15+ (%)")
 
 ```
-
-
 
 The GDP-per-capita plot underscores the prosperity gap that separates North America from East Asia. Real income in the United States rises from roughly thirty-nine thousand dollars in 1990 to about sixty-six thousand in 2023, widening its lead over all other cases. Canada mirrors the American path but remains seven to ten thousand dollars lower throughout. China, starting from a base of just over one thousand dollars, multiplies its income almost ten-fold, yet still reaches only about twelve thousand dollars by the end of the sample. Japan’s income climbs during the 1990s but plateaus at approximately thirty-six thousand dollars after 2010. The corresponding growth-rate figures reveal that China’s rapid expansion, once firmly in double digits, decelerates to mid-single-digit territory in the 2010s. Japan’s growth oscillates around zero, reflecting its long struggle with deflation and demographic ageing. The United States and Canada exhibit more moderate booms and busts, rarely exceeding four percent on the upside or falling much below minus two percent except in the global crises of 2009 and 2020, which strike all four economies simultaneously.
 
+## Evolution of labor-market participation
 ```{python}
+#| echo: false
+#| message: false
+#| warning: false
+#| fig-width: 8      # Quarto container size (inches)
+#| fig-height: 5
+#| fig-align: "center"
 
+import matplotlib as mpl
+
+# bump up the default figure size for this call
+mpl.rcParams['figure.figsize']   = (12, 7)
+# shrink the legend font
+mpl.rcParams['legend.fontsize']  = 8
+
+# now call your existing helper
+lineplot("Employment", "Employment-to-population 15+ (%)")
 
 ```
 
+The employment-to-population chart reveals markedly different trajectories between the two regions. China begins the 1990s with an exceptionally high participation rate of about seventy-seven percent, but this figure declines steadily to the mid-sixties by 2023. Japan starts near sixty-three percent, drifts downward for a decade, then partially recovers but never regains its early-1990s peak. Canada and the United States instead fluctuate within a relatively narrow band between fifty-eight and sixty-four percent. Both North-American economies share two conspicuous dips—the Great Recession in 2009 and the Covid-19 shock in 2020—yet by 2023 they have largely returned to pre-pandemic levels of around sixty-two to sixty-three percent.
 
-## Quarto
 
-Quarto enables you to weave together content and executable code into a finished document. To learn more about Quarto see <https://quarto.org>.
+## GDP Growth of Countries
+```{python}
+#| echo: false
+#| message: false
+#| warning: false
+#| fig-width: 6
+#| fig-height: 4
+#| fig-align: "center"
+
+import seaborn as sns
+g = sns.FacetGrid(df, col="iso3", col_wrap=3, height=2.2, aspect=1.4,
+                  sharey=False, sharex=True)
+g.map_dataframe(sns.lineplot, x="Year", y="GDP_Growth")
+g.set_axis_labels("", "GDP growth (%)")
+g.set_titles("{col_name}")
+g.fig.suptitle("GDP-growth trajectories, 1990-2023", y=1.02, fontsize=12)
+plt.tight_layout()
+g.savefig(OUT_FIG / "facet_gdp_growth.png", dpi=300)
+plt.show()
+```
+
+Each panel shows annual real-GDP growth for one country (1990-2023). China starts with exceptional double-digit gains, slows steadily after 2010, and dips sharply in 2020. Canada, the UK and the US share the usual rich-economy cycle: steady 2-4 % growth interrupted by recessions in 2009 and 2020, with quick rebounds. Japan hovers near zero for most of the period, illustrating prolonged stagnation, and sees the same two global downturns. The shaded bands mark wider volatility during those recessions and during China’s early boom, but are narrow in normal years, signalling more predictable growth paths then.
