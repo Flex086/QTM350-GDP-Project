@@ -23,3 +23,5 @@ Kurtosis:                       2.272   Cond. No.                         2.39
 
 Notes:
 [1] Standard Errors are robust to cluster correlation (cluster)
+
+

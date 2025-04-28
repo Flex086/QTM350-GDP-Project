@@ -1,0 +1,274 @@
+---
+title: "Productivity versus Participation: Divergent Growth Paths in North America and East Asia"
+author: "Jackson Fang, Kei Nie, Felix Huang, Yunqing Chen"
+format: 
+   pdf:
+     fig-width: 3
+     fig-height: 2
+     margin: 1in
+engine: jupyter
+editor: 
+   render-on-save: true
+---
+
+## Introduction
+
+Our study examines how labour-force utilization, income levels and short-run growth interact in two North-American economies—the United States and Canada—and two large East-Asian economies—China and Japan—during the period 1990 to 2023. 。。。
+
+## Data
+```{python}
+
+!conda activate Python 3.11.5
+
+
+#| echo: false
+#| message: false
+import sqlite3
+import pandas as pd
+
+# open (or create) your SQLite database
+conn = sqlite3.connect('economic_data.db')
+
+# Cell 2 — Read each CSV and push to SQL as raw tables
+datasets = [
+    ('gdp',        '../data/gdp.csv'),
+    ('emp',        '../data/emp.csv'),
+    ('gdp_growth', '../data/gdp_growth.csv'),
+]
+
+for level, path in datasets:
+    print(f"→ Loading raw table: {level}_raw from {path!r}")
+    df = pd.read_csv(path, skiprows=4)  # adjust skiprows only if necessary
+    df.to_sql(f"{level}_raw", conn, if_exists='replace', index=False)
+
+print("All raw tables loaded into SQLite.")
+
+import sqlite3
+
+# 1) Connect & get a cursor
+conn = sqlite3.connect('economic_data.db')
+cur  = conn.cursor()
+
+# 2) Define your filters (you may generate these programmatically, but we won't loop over tables)
+target_countries = ['China','Japan','South Korea','United States','United Kingdom','Canada']
+countries_sql = ", ".join(f"'{c}'" for c in target_countries)
+
+years    = [str(y) for y in range(1990, 2024)]
+columns  = ['Country Name', 'Indicator Name'] + years
+col_clause = ", ".join(f'"{c}"' for c in columns)
+
+# 3) Filter gdp_raw → gdp_filtered, drop old, rename
+cur.execute(f"""
+    CREATE TABLE gdp_filtered AS
+    SELECT {col_clause}
+      FROM gdp_raw
+     WHERE "Country Name" IN ({countries_sql});
+""")
+cur.execute("DROP TABLE gdp_raw;")
+cur.execute("ALTER TABLE gdp_filtered RENAME TO gdp_raw;")
+conn.commit()
+
+# 4) Filter emp_raw → emp_filtered, drop old, rename
+cur.execute(f"""
+    CREATE TABLE emp_filtered AS
+    SELECT {col_clause}
+      FROM emp_raw
+     WHERE "Country Name" IN ({countries_sql});
+""")
+cur.execute("DROP TABLE emp_raw;")
+cur.execute("ALTER TABLE emp_filtered RENAME TO emp_raw;")
+conn.commit()
+
+# 5) Filter gdp_growth_raw → gdp_growth_filtered, drop old, rename
+cur.execute(f"""
+    CREATE TABLE gdp_growth_filtered AS
+    SELECT {col_clause}
+      FROM gdp_growth_raw
+     WHERE "Country Name" IN ({countries_sql});
+""")
+cur.execute("DROP TABLE gdp_growth_raw;")
+cur.execute("ALTER TABLE gdp_growth_filtered RENAME TO gdp_growth_raw;")
+conn.commit()
+
+
+# 6) Verify first 5 rows of each
+for tbl in ['gdp_raw','emp_raw','gdp_growth_raw']:
+    print(f"\n--- {tbl} ---")
+    cur.execute(f"SELECT {col_clause} FROM {tbl} LIMIT 5;")
+    rows = cur.fetchall()
+    # print column headers then rows
+    print(columns)
+    for row in rows:
+        print(row)
+
+# 7) Close connection
+conn.close()
+
+# Cell 3 — Reconnect to the database
+import sqlite3
+import pandas as pd
+
+conn = sqlite3.connect('economic_data.db')
+
+# Read all three tables back into pandas
+print("Reading tables into pandas DataFrames...")
+gdp_df        = pd.read_sql_query("SELECT * FROM gdp_raw", conn)
+emp_df        = pd.read_sql_query("SELECT * FROM emp_raw", conn)
+gdp_growth_df = pd.read_sql_query("SELECT * FROM gdp_growth_raw", conn)
+
+# Cell 4 — Data Cleaning
+print("\nCleaning data...")
+
+# Melt the dataframes (wide to long format) for easier merging later
+def melt_df(df, value_name):
+    id_vars = ['Country Name', 'Indicator Name']
+    value_vars = [col for col in df.columns if col not in id_vars]
+    return df.melt(id_vars=id_vars, value_vars=value_vars, 
+                   var_name='Year', value_name=value_name)
+
+gdp_long        = melt_df(gdp_df, 'GDP')
+emp_long        = melt_df(emp_df, 'Employment')
+gdp_growth_long = melt_df(gdp_growth_df, 'GDP_Growth')
+
+# Make sure 'Year' is an integer and value columns are numeric
+def clean_numeric(df, value_col):
+    df['Year'] = df['Year'].astype(int)
+    df[value_col] = pd.to_numeric(df[value_col], errors='coerce')
+
+clean_numeric(gdp_long, 'GDP')
+clean_numeric(emp_long, 'Employment')
+clean_numeric(gdp_growth_long, 'GDP_Growth')
+
+# Cell 5 — Merge Tables Together
+print("\nMerging datasets...")
+
+merged_df = gdp_long.merge(emp_long,        on=['Country Name','Indicator Name','Year'], how='outer')
+merged_df = merged_df.merge(gdp_growth_long, on=['Country Name','Indicator Name','Year'], how='outer')
+
+# Because 'Indicator Name' can be different across tables, you can drop it after confirming
+merged_df.drop(columns=['Indicator Name'], inplace=True)
+
+# Optional: Reorder columns
+merged_df = merged_df[['Country Name', 'Year', 'GDP', 'Employment', 'GDP_Growth']]
+
+# Cell 6 — Save Cleaned DataFrame into SQL
+print("\nSaving merged cleaned data into database as 'econ_cleaned'...")
+
+merged_df.to_sql('econ_cleaned', conn, if_exists='replace', index=False)
+
+
+# Cell 7 — Descriptive Statistics Summary
+print("\nGenerating summary statistics...")
+
+summary_stats = merged_df.groupby('Country Name').agg({
+    'GDP': ['count', 'mean', 'std', 'min', 'max'],
+    'Employment': ['count', 'mean', 'std', 'min', 'max'],
+    'GDP_Growth': ['count', 'mean', 'std', 'min', 'max'],
+})
+
+# Clean up column names
+summary_stats.columns = ['_'.join(col).strip() for col in summary_stats.columns.values]
+
+# Display
+print(summary_stats)
+
+# Optional: Save summary statistics to a CSV
+summary_stats.to_csv('summary_statistics.csv')
+
+# Final Step — Close connection
+conn.close()
+
+print("\nAll tasks completed!")
+```
+
+
+## Income levels and their growth paths Income levels and their growth paths
+
+```{python}
+#| echo: false
+#| message: false
+# ============== 0.  SETUP ====================================================
+!conda activate Python 3.11.5
+!pip install pycountry
+!pip install statsmodels
+
+import sqlite3
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+from pathlib import Path
+import pycountry                     # pip install pycountry
+
+# ---- output folders ---------------------------------------------------------
+OUT_FIG = Path("figures")
+OUT_DAT = Path("processed")
+OUT_FIG.mkdir(exist_ok=True, parents=True)
+OUT_DAT.mkdir(exist_ok=True, parents=True)
+
+INDICATORS = ["GDP", "Employment", "GDP_Growth"]
+
+# ============== 1.  LOAD CLEAN PANEL =========================================
+DB_PATH = "/Users/chenyunqing/Documents/QTM350/QTM350-GDP-Project/350FinalQuarto/economic_data.db"
+with sqlite3.connect(DB_PATH) as con:
+    df = pd.read_sql_query("SELECT * FROM econ_cleaned", con)
+
+if df.empty:
+    raise RuntimeError("econ_cleaned table is empty – check SQL pipeline.")
+
+# ============== 2.  ENRICH  – add ISO-3 codes  ===============================
+def name_to_iso3(name):
+    try:
+        return pycountry.countries.lookup(name).alpha_3
+    except LookupError:
+        # handle special cases
+        mapping = {
+            "South Korea": "KOR",
+            "United States": "USA",
+            "United Kingdom": "GBR"
+        }
+        return mapping.get(name, None)
+
+df["iso3"] = df["Country Name"].apply(name_to_iso3)
+if df["iso3"].isna().any():
+    missing = df[df["iso3"].isna()]["Country Name"].unique()
+    raise ValueError(f"ISO-3 lookup failed for: {missing}")
+
+# ============== 3.  BASIC CLEANING ===========================================
+df[INDICATORS] = df[INDICATORS].apply(pd.to_numeric, errors="coerce")
+
+# forward-fill within each country to patch occasional NaNs
+df = (df.sort_values(["iso3", "Year"])
+        .groupby("iso3")
+        .apply(lambda g: g.ffill())
+        .reset_index(drop=True))
+
+```
+
+
+```{python}
+#| echo: true
+def lineplot(ind_col, ylab):
+    plt.figure()
+    for iso, g in df.groupby("iso3"):
+        plt.plot(g["Year"], g[ind_col], label=iso)
+    plt.title(ylab)
+    plt.xlabel("Year")
+    plt.ylabel(ylab)
+    plt.legend()
+    plt.tight_layout()
+    plt.savefig(OUT_FIG / f"{ind_col}_trend.png", dpi=300)
+    plt.plot()
+
+lineplot("GDP",         "GDP per capita (constant 2015 US$)")
+lineplot("GDP_Growth",  "GDP growth rate (%)")
+lineplot("Employment",  "Employment-to-population 15+ (%)")
+
+```
+
+The GDP-per-capita plot underscores the prosperity gap that separates North America from East Asia. Real income in the United States rises from roughly thirty-nine thousand dollars in 1990 to about sixty-six thousand in 2023, widening its lead over all other cases. Canada mirrors the American path but remains seven to ten thousand dollars lower throughout. China, starting from a base of just over one thousand dollars, multiplies its income almost ten-fold, yet still reaches only about twelve thousand dollars by the end of the sample. Japan’s income climbs during the 1990s but plateaus at approximately thirty-six thousand dollars after 2010. The corresponding growth-rate figures reveal that China’s rapid expansion, once firmly in double digits, decelerates to mid-single-digit territory in the 2010s. Japan’s growth oscillates around zero, reflecting its long struggle with deflation and demographic ageing. The United States and Canada exhibit more moderate booms and busts, rarely exceeding four percent on the upside or falling much below minus two percent except in the global crises of 2009 and 2020, which strike all four economies simultaneously.
+
+
+
+## Quarto
+
+Quarto enables you to weave together content and executable code into a finished document. To learn more about Quarto see <https://quarto.org>.
