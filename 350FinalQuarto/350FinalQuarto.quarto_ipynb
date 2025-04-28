@@ -12,29 +12,30 @@
         "     fig-width: 3\n",
         "     fig-height: 2\n",
         "     margin: 1in\n",
-        "engine: jupyter\n",
-        "editor: \n",
-        "   render-on-save: true\n",
         "---\n",
         "\n",
         "\n",
-        "## Introduction\n",
+        "# Introduction\n",
         "\n",
         "Our study examines how labour-force utilization, income levels and short-run growth interact in two North-American economies—the United States and Canada—and two large East-Asian economies—China and Japan—during the period 1990 to 2023. 。。。\n",
         "\n",
-        "## Data"
+        "# Data\n",
+        "\n",
+        "### Data cleaning, merging, and preprocessing"
       ],
-      "id": "953dbbc3"
+      "id": "19ea3995"
     },
     {
       "cell_type": "code",
       "metadata": {},
       "source": [
-        "! conda activate Python 3.11.5\n",
+        "#| echo: true\n",
+        "#| eval: true\n",
+        "\n",
+        "!conda install pycountry\n",
+        "!conda install matplotlib \n",
         "\n",
         "\n",
-        "#| echo: false\n",
-        "#| message: false\n",
         "import sqlite3\n",
         "import pandas as pd\n",
         "\n",
@@ -192,17 +193,9 @@
         "\n",
         "print(\"\\nAll tasks completed!\")"
       ],
-      "id": "f072a3f9",
+      "id": "e7f236f5",
       "execution_count": null,
       "outputs": []
-    },
-    {
-      "cell_type": "markdown",
-      "metadata": {},
-      "source": [
-        "## Income levels and their growth paths Income levels and their growth paths\n"
-      ],
-      "id": "71d4215a"
     },
     {
       "cell_type": "code",
@@ -212,9 +205,6 @@
       "source": [
         "#| echo: false\n",
         "# ============== 0.  SETUP ====================================================\n",
-        "\n",
-        "!pip install pycountry\n",
-        "!pip install statsmodels\n",
         "\n",
         "import sqlite3\n",
         "import pandas as pd\n",
@@ -266,9 +256,19 @@
         "        .apply(lambda g: g.ffill())\n",
         "        .reset_index(drop=True))"
       ],
-      "id": "bbd0fa87",
+      "id": "7e29d3a9",
       "execution_count": null,
       "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "# Data Analysis\n",
+        "\n",
+        "## Income levels and their growth paths Income levels and their growth paths\n"
+      ],
+      "id": "2dffbc57"
     },
     {
       "cell_type": "code",
@@ -291,7 +291,7 @@
         "lineplot(\"GDP_Growth\",  \"GDP growth rate (%)\")\n",
         "lineplot(\"Employment\",  \"Employment-to-population 15+ (%)\")"
       ],
-      "id": "3aa812c4",
+      "id": "d5b1cefc",
       "execution_count": null,
       "outputs": []
     },
@@ -307,7 +307,7 @@
         "\n",
         "Quarto enables you to weave together content and executable code into a finished document. To learn more about Quarto see <https://quarto.org>."
       ],
-      "id": "392cf11a"
+      "id": "215734c5"
     }
   ],
   "metadata": {
