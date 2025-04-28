@@ -1,5 +1,7 @@
-project:
-  title: "350FinalQuarto"
+title: "350FinalQuarto"
+format: html
+execute:
+  kernel: base
 
 
 

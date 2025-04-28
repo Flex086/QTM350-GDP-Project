@@ -1,26 +1,29 @@
 ---
 title: "Productivity versus Participation: Divergent Growth Paths in North America and East Asia"
-author: "Jackson Fang, Kei Nie, Felix Huang, Yunqing Chen"
+author: "Kei Nie, Felix Huang, Yunqing Chen, Jackson Fang"
 format: 
    pdf:
      fig-width: 3
      fig-height: 2
      margin: 1in
 engine: jupyter
+jupyter:
+  kernel: base
 editor: 
    render-on-save: true
 ---
-
+```{python}
+import sys, os
+print("sys.executable:", sys.executable)
+print("CONDA_DEFAULT_ENV:", os.environ.get("CONDA_DEFAULT_ENV"))
+```
 ## Introduction
 
 Our study examines how labour-force utilization, income levels and short-run growth interact in two North-American economies—the United States and Canada—and two large East-Asian economies—China and Japan—during the period 1990 to 2023. 。。。
 
 ## Data
+
 ```{python}
-
-!conda activate Python 3.11.5
-
-
 #| echo: false
 #| message: false
 import sqlite3
@@ -185,13 +188,20 @@ print("\nAll tasks completed!")
 ## Income levels and their growth paths Income levels and their growth paths
 
 ```{python}
+import os
+
+# show the current working directory
+print("CWD:", os.getcwd())
+
+# list files/folders there so you can see where your .db lives
+print("Contents:", os.listdir("."))
+
+
 #| echo: false
 #| message: false
 # ============== 0.  SETUP ====================================================
-!conda activate Python 3.11.5
-!pip install pycountry
-!pip install statsmodels
 
+!pwd
 import sqlite3
 import pandas as pd
 import numpy as np
@@ -208,7 +218,7 @@ OUT_DAT.mkdir(exist_ok=True, parents=True)
 INDICATORS = ["GDP", "Employment", "GDP_Growth"]
 
 # ============== 1.  LOAD CLEAN PANEL =========================================
-DB_PATH = "/Users/chenyunqing/Documents/QTM350/QTM350-GDP-Project/350FinalQuarto/economic_data.db"
+DB_PATH = "economic_data.db"
 with sqlite3.connect(DB_PATH) as con:
     df = pd.read_sql_query("SELECT * FROM econ_cleaned", con)
 
@@ -242,10 +252,6 @@ df = (df.sort_values(["iso3", "Year"])
         .apply(lambda g: g.ffill())
         .reset_index(drop=True))
 
-```
-
-
-```{python}
 #| echo: true
 def lineplot(ind_col, ylab):
     plt.figure()
@@ -264,6 +270,8 @@ lineplot("GDP_Growth",  "GDP growth rate (%)")
 lineplot("Employment",  "Employment-to-population 15+ (%)")
 
 ```
+
+
 
 The GDP-per-capita plot underscores the prosperity gap that separates North America from East Asia. Real income in the United States rises from roughly thirty-nine thousand dollars in 1990 to about sixty-six thousand in 2023, widening its lead over all other cases. Canada mirrors the American path but remains seven to ten thousand dollars lower throughout. China, starting from a base of just over one thousand dollars, multiplies its income almost ten-fold, yet still reaches only about twelve thousand dollars by the end of the sample. Japan’s income climbs during the 1990s but plateaus at approximately thirty-six thousand dollars after 2010. The corresponding growth-rate figures reveal that China’s rapid expansion, once firmly in double digits, decelerates to mid-single-digit territory in the 2010s. Japan’s growth oscillates around zero, reflecting its long struggle with deflation and demographic ageing. The United States and Canada exhibit more moderate booms and busts, rarely exceeding four percent on the upside or falling much below minus two percent except in the global crises of 2009 and 2020, which strike all four economies simultaneously.
 
